@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import sqlalchemy as sql
+# import sqlalchemy as sql
 connection = 'mysql://toyscie:WILD4Rdata!@51.178.25.157:23456/toys_and_models'
 sql_engine = sql.create_engine(connection)
 query_LQ1 = '''SELECT p.productName, sum(p.quantityInStock) as total_stock
