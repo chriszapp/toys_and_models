@@ -57,6 +57,8 @@ where x.seq <=2;'''
 #define your databases here, follow the same logic, df_FQ1, for example
 df_FQ2 = pd.read_sql_query(query_FQ2, con = connection)
 df_FQ1 = pd.read_sql_query(query_FQ1, con = connection)
+df_LQ1 = pd.read_sql_query(query_LQ1, con = connection)
+df_HR = pd.read_sql_query(query_human_res, con = connection)
 #dont touch these
 with st.sidebar:
     p = st.button("Presentation")
