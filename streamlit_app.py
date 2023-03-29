@@ -39,7 +39,8 @@ with st.sidebar:
     p = st.button("Presentation")
     S = st.button("Sales")
     F = st.button("Finance")
-    LH = st.button("Logistics and Human Resources")
+    L = st.button("Logistics")
+    HR = st.button("Human Resources")
 #uncomment your if after you paste the code and make sure it works
 #if p:
 #if S:
@@ -50,4 +51,4 @@ if F:
    st.header("Finances Quest 2")
    st.subheader("Orders that have not yet been paid")
    df_FQ2
-#if LH:
+#if L:
