@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import mysql.connector
 #connection to mysql
 connection = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!', host = '51.178.25.157', port = '23456', database = 'toys_and_models', use_pure = True)
-#put your querys here and name them "query_FQ1" if it is finances quest 1
+#put your querys here and name them "query_FQ1" , for example
 query_FQ2 = '''Select o.customernumber, o.orderdate, o.ordernumber, sum((od.quantityordered * od.priceeach)) as Order_Value
 from orders o
 join orderdetails od
