@@ -59,6 +59,7 @@ df_FQ2 = pd.read_sql_query(query_FQ2, con = connection)
 df_FQ1 = pd.read_sql_query(query_FQ1, con = connection)
 df_LQ1 = pd.read_sql_query(query_LQ1, con = connection)
 df_HR = pd.read_sql_query(query_human_res, con = connection)
+df_HR['date'] = pd.to_datetime(df_HR[['year', 'month']]. assign(day=1))
 #dont touch these
 with st.sidebar:
     p = st.button("Presentation")
@@ -76,4 +77,19 @@ if F:
    st.header("Finances Quest 2")
    st.subheader("Orders that have not yet been paid")
    df_FQ2
-#if L:
+if L:
+    st.header("Logistics")
+    st.subheader("The stock of the 5 most ordered products")
+    st.write(df_LQ1)
+    viz_L = sns.barplot(data = df_LQ1,
+                        x = 'productName',
+                        y = 'total_stock')
+    st.pyplot(viz_L.figure)
+if HR:
+    st.header("Human Resources")
+    st.subheader("Each month, the 2 sellers with the highest turnover")
+    df_HR
+    viz_HR = sns.barplot(data =( df_HR[df_HR['date'] == '2021-01-01'] ),
+                         x = 'sellers',
+                         y = 'monthly_turnover', dodge=True)
+    st.pyplot(viz_HR.figure)
