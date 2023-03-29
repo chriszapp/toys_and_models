@@ -31,6 +31,29 @@ SELECT mt.turnover,
        mt.country
 FROM my_table AS mt
 ORDER BY mt.country;'''
+query_LQ1 = '''SELECT p.productName, sum(p.quantityInStock) as total_stock
+FROM orderdetails od
+    JOIN products p
+      ON od.productcode = p.productcode
+    GROUP BY p.productCode
+    ORDER BY sum(od.quantityOrdered) DESC
+    LIMIT 5;'''
+query_human_res = '''SELECT year, month, x.sellers, monthly_turnover
+FROM (SELECT year(o.OrderDate) as year,
+			month(o.OrderDate) as month,
+			concat(e.firstName, ' ', e.lastname) AS sellers,
+            SUM(od.quantityOrdered) AS monthly_turnover,
+            row_number() over (partition by year(o.OrderDate), month(o.OrderDate) order by SUM(od.quantityOrdered) desc) as seq
+FROM orders as o
+JOIN customers as c
+ON c.customerNumber=o.customerNumber
+JOIN employees as e
+ON e.employeeNumber=c.salesRepEmployeeNumber
+JOIN orderdetails as od
+ON od.orderNumber=o.orderNumber
+GROUP BY year(o.OrderDate), month(o.OrderDate), sellers
+Order by year(o.OrderDate), month(o.OrderDate)) as x
+where x.seq <=2;'''
 #define your databases here, follow the same logic, df_FQ1, for example
 df_FQ2 = pd.read_sql_query(query_FQ2, con = connection)
 df_FQ1 = pd.read_sql_query(query_FQ1, con = connection)
