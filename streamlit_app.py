@@ -6,6 +6,29 @@ import mysql.connector
 #connection to mysql
 connection = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!', host = '51.178.25.157', port = '23456', database = 'toys_and_models', use_pure = True)
 #put your querys here and name them "query_FQ1" , for example
+query_sales = """
+    SELECT YEAR(o.orderDate) AS Sales_Year, 
+           MONTH(o.orderDate) AS Sales_Month, 
+           SUM(CASE WHEN p.productLine = 'Motorcycles' THEN od.quantityOrdered ELSE 0 END) AS Motorcycles_Sales, 
+           SUM(CASE WHEN p.productLine = 'Classic Cars' THEN od.quantityOrdered ELSE 0 END) AS Classic_Cars_Sales, 
+           SUM(CASE WHEN p.productLine = 'Trucks and Buses' THEN od.quantityOrdered ELSE 0 END) AS Trucks_Buses_Sales, 
+           SUM(CASE WHEN p.productLine = 'Vintage Cars' THEN od.quantityOrdered ELSE 0 END) AS Vintage_Cars_Sales, 
+           SUM(CASE WHEN p.productLine = 'Planes' THEN od.quantityOrdered ELSE 0 END) AS Planes_Sales, 
+           SUM(CASE WHEN p.productLine = 'Trains' THEN od.quantityOrdered ELSE 0 END) AS Trains_Sales, 
+           SUM(CASE WHEN p.productLine = 'Ships' THEN od.quantityOrdered ELSE 0 END) AS Ships_Sales, 
+           LAG(SUM(CASE WHEN p.productLine = 'Motorcycles' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Motorcycles_Sales_PY,
+           LAG(SUM(CASE WHEN p.productLine = 'Classic Cars' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Ccs_PreviousYear, 
+           LAG(SUM(CASE WHEN p.productLine = 'Trucks and Buses' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Trucks_Buses_Sales_PreviousYear, 
+           LAG(SUM(CASE WHEN p.productLine = 'Vintage Cars' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Vintage_Cars_Sales_PreviousYear, 
+           LAG(SUM(CASE WHEN p.productLine = 'Planes' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Planes_Sales_PreviousYear, 
+           LAG(SUM(CASE WHEN p.productLine = 'Trains' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Trains_PreviousYear, 
+           LAG(SUM(CASE WHEN p.productLine = 'Ships' THEN od.quantityOrdered ELSE 0 END), 12) OVER (ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)) AS Ships_PreviousYear
+    FROM orders o
+    JOIN orderdetails od ON o.orderNumber = od.orderNumber
+    JOIN products p ON p.productCode = od.productCode
+    GROUP BY YEAR(o.orderDate), MONTH(o.orderDate)
+    ORDER BY YEAR(o.orderDate), MONTH(o.orderDate);
+"""
 query_FQ2 = '''Select o.customernumber, o.orderdate, o.ordernumber, sum((od.quantityordered * od.priceeach)) as Order_Value
 from orders o
 join orderdetails od
@@ -55,9 +78,10 @@ GROUP BY year(o.OrderDate), month(o.OrderDate), sellers
 Order by year(o.OrderDate), month(o.OrderDate)) as x
 where x.seq <=2;'''
 #define your databases here, follow the same logic, df_FQ1, for example
+df_SL = pd.read_sql_query(query_sales, con = connection)
 df_FQ2 = pd.read_sql_query(query_FQ2, con = connection)
 df_FQ1 = pd.read_sql_query(query_FQ1, con = connection)
-df_LQ1 = pd.read_sql_query(query_LQ1, con = connection)
+df_LQ1 = pd.read_sql_query(query_LQ1, con = connection) 
 df_HR = pd.read_sql_query(query_human_res, con = connection)
 df_HR['date'] = pd.to_datetime(df_HR[['year', 'month']]. assign(day=1))
 #dont touch these
@@ -69,7 +93,10 @@ with st.sidebar:
     HR = st.button("Human Resources")
 #uncomment your if after you paste the code and make sure it works
 #if p:
-#if S:
+if S:
+  st.header("Sales Quest")
+  st.subheader("The number of products sold by category and by month, with comparison and rate of change compared to the same month of the previous year")
+
 if F:
    st.header("Finances Quest 1")
    st.subheader("The turnover of the orders of the last two months by country")
