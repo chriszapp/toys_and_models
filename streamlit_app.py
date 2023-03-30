@@ -91,6 +91,7 @@ df_FQ1 = pd.read_sql_query(query_FQ1, con = connection)
 df_LQ1 = pd.read_sql_query(query_LQ1, con = connection) 
 df_HR = pd.read_sql_query(query_human_res, con = connection)
 df_HR['date'] = pd.to_datetime(df_HR[['year', 'month']]. assign(day=1))
+df_HR['date'] = pd.to_datetime(df_HR['date']).dt.date
 #dont touch these
 #with st.sidebar:
 #    p = st.button("Presentation")
@@ -152,37 +153,65 @@ if choice == 'Finance':
 if choice == 'Logistics':
     st.header("Logistics")
     st.subheader("The stock of the 5 most ordered products")
-    #st.dataframe(df_LQ1)
-    fig, ax = plt.subplots(1,1,figsize=(12,6))
-    sns.barplot(data = df_LQ1,
-                x = 'productName',
-                y = 'total_stock', ax=ax)
-    plt.title("Logistics")
-    plt.ylabel("Total Stock")
-    plt.xlabel("Product Name")
-    plt.xticks(rotation=20)
-    #fig.set_tight_layout(True)
-    st.pyplot(plt.gcf())
+    df_rename = df_LQ1.rename(columns={'productName': 'Product Name', 'total_stock': 'Total Stock'})
+    col1, col2 = st.columns(2)
+    with col2:
+       st.write(" ")
+       st.write(" ")
+       st.write(" ")
+       st.write(" ")
+       st.dataframe(df_rename, use_container_width=True)
+    with col1:
+       fig, ax = plt.subplots(1,1)#figsize=(12,6))
+       viz_1 = sns.barplot(data = df_LQ1,
+                   x = 'productName',
+                   y = 'total_stock', 
+                   #color='royalblue',
+                   ax=ax)
+       fig.set_tight_layout(True)
+       plt.title("")
+       plt.ylabel("Total Stock")
+       plt.xlabel("")
+       plt.xticks(rotation=40)
+       st.pyplot(viz_1.figure)
+
 if choice == 'Human Resources':
-    def page_about():
-       st.header("Human Resources")
-       st.markdown(":tada: Top 2 sellers with the highest turnover each month")
-    #st.subheader("Top 2 sellers with the highest turnover each month")
+    st.header("Human Resources")
+    st.subheader("Top 2 sellers with the highest turnover each month")
     def page_df():
-       st.header("Preview Dataframe")
-       st.dataframe(df_HR)
+       df_rename = df_HR[['sellers','monthly_turnover','date']].rename(columns={'sellers': 'Sellers', 'monthly_turnover': 'Monthly Turnover', 'date': 'Date'})
+       col1, col2 = st.columns(2)
+       with col1:
+          st.write(" ")
+          st.write(" ")
+          st.write(" ")
+          st.dataframe(df_rename, use_container_width=True)
+       with col2:
+          df_rel_freq = (df_HR['sellers'].value_counts()/df_HR.shape[0]*100)
+          fig, ax = plt.subplots()
+          ax = df_rel_freq.plot(kind='pie')
+          #ax.pie(df_rel_freq, labels=list(df_HR['sellers'].unique()))
+          ax.set_ylabel("")
+          #ax.axis(rotation=15)
+          st.pyplot(fig)
     def page_plot():
-       st.header("Plot Data")
-       fig, ax = plt.subplots(figsize=(12,6))
-       sns.barplot(data =( df_HR[df_HR['date'] == '2021-01-01'] ),
+       #st.header("Plot Data")
+       col1, col2 = st.columns(2)
+       with col2:
+          selected_date = st.select_slider('Select date',
+                                        options=list(df_HR['date']))
+          st.write("The selected date is:", selected_date)
+          filtered_data = df_HR[df_HR['date'] == selected_date]
+       with col1:
+          fig, ax = plt.subplots(1,1)#,figsize=(15,5))
+          sns.barplot(data = filtered_data,
                    x = 'sellers',
                    y = 'monthly_turnover', dodge=True)
-       plt.title("Human Resources")
-       plt.ylabel("Monthly Turnover")
-       plt.xlabel("Sellers")
-       st.pyplot(plt.gcf())
+          plt.title("")
+          plt.ylabel("Monthly Turnover")
+          plt.xlabel("Sellers")
+          st.pyplot(plt.gcf())
     pages = {
-       "About Data": page_about,
        "Preview Data": page_df,
        "Plot Data": page_plot
     }
