@@ -107,16 +107,25 @@ if F:
 if L:
     st.header("Logistics")
     st.subheader("The stock of the 5 most ordered products")
-    st.write(df_LQ1)
-    viz_L = sns.barplot(data = df_LQ1,
+    st.dataframe(df_LQ1)
+    fig, ax = plt.subplots()
+    sns.barplot(data = df_LQ1,
                         x = 'productName',
                         y = 'total_stock')
-    st.pyplot(viz_L.figure)
+    plt.title("Logistics")
+    plt.ylabel("Total Stock")
+    plt.xlabel("Product Name")
+#    fig.set_tight_layout(True)
+    st.pyplot(plt.gcf())
 if HR:
     st.header("Human Resources")
-    st.subheader("Each month, the 2 sellers with the highest turnover")
-    df_HR
-    viz_HR = sns.barplot(data =( df_HR[df_HR['date'] == '2021-01-01'] ),
+    st.subheader("Top 2 sellers with the highest turnover each month")
+    st.dataframe(df_HR)
+    fig, ax = plt.subplots()
+    sns.barplot(data =( df_HR[df_HR['date'] == '2021-01-01'] ),
                          x = 'sellers',
                          y = 'monthly_turnover', dodge=True)
-    st.pyplot(viz_HR.figure)
+    plt.title("Human Resources")
+    plt.ylabel("Monthly Turnover")
+    plt.xlabel("Sellers")
+    st.pyplot(plt.gcf())
