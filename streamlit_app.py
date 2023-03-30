@@ -108,11 +108,46 @@ if choice == 'Sales':
   st.subheader("The number of products sold by category and by month, with comparison and rate of change compared to the same month of the previous year")
 
 if choice == 'Finance':
+   df_FQ1_sorted = df_FQ1.sort_values(by='turnover', ascending = False)
    st.header("Finances Quest 1")
    st.subheader("The turnover of the orders of the last two months by country")
-   df_FQ1
+   col1, col2 = st.columns(2)
+   with col2:
+        st.write(df_FQ1_sorted)
+   with col1:
+        fig, ax = plt.subplots(1,1)
+        viz_bar1 = sns.barplot(data = df_FQ1_sorted,
+            x = 'country',
+            y = 'turnover',
+            color="royalblue",
+            ax = ax)
+        fig.set_tight_layout(True)
+        plt.xticks(rotation=45)
+        plt.title('Turnover of the orders of the last two months by country')
+        st.pyplot((viz_bar1.figure))
    st.header("Finances Quest 2")
    st.subheader("Orders that have not yet been paid")
+   df_gb_cn = df_FQ2.groupby('customernumber').sum()
+   df_gb_cn = df_gb_cn.reset_index()
+   df_sorted = df_gb_cn.sort_values(by='Order_Value', ascending = False)
+   col1, col2 = st.columns(2)
+   with col2:
+    df_sorted
+   with col1:
+    fig, ax = plt.subplots(1,1, figsize = (15,10))
+    viz_bar2 = sns.barplot(data=df_sorted,
+                          x='customernumber',
+                          y='Order_Value',
+                          color='royalblue',
+                          order=df_sorted["customernumber"],
+                          ax = ax)
+    fig.set_tight_layout(True)
+    plt.xticks(rotation=45)
+    plt.xlabel("Customernumber", size=15)
+    plt.ylabel("Orders Value", size=15)
+    plt.title('Orders that have not yet been paid, total by Client')
+    st.pyplot((viz_bar2.figure))
+   st.header("Orders that have not yet been paid, Detailed by client and order number")
    df_FQ2
 if choice == 'Logistics':
     st.header("Logistics")
