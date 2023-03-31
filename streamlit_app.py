@@ -130,9 +130,10 @@ if choice == 'Finance':
    df_gb_cn = df_FQ2.groupby('customernumber').sum()
    df_gb_cn = df_gb_cn.reset_index()
    df_sorted = df_gb_cn.sort_values(by='Order_Value', ascending = False)
+   df_sorted1 = df_sorted.drop(columns='ordernumber')
    col1, col2 = st.columns(2)
    with col2:
-    df_sorted
+    df_sorted1
    with col1:
     fig, ax = plt.subplots(1,1, figsize = (15,10))
     viz_bar2 = sns.barplot(data=df_sorted,
