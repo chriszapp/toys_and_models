@@ -99,9 +99,9 @@ df_HR['date'] = pd.to_datetime(df_HR['date']).dt.date
 #    F = st.button("Finance")
 #    L = st.button("Logistics")
 #    HR = st.button("Human Resources")
-choice = st.sidebar.radio("Select a Topic", ('Presentation','Sales','Finance','Logistics','Human Resources'))
-if choice == 'Presentation':
-   st.write('This is the presentation')
+choice = st.sidebar.radio("Select a Topic", ('Sales','Finance','Logistics','Human Resources'))
+#if choice == 'Presentation':
+#   st.write('This is the presentation')
 #uncomment your if after you paste the code and make sure it works
 #if p:
 if choice == 'Sales':
