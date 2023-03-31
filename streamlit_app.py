@@ -170,7 +170,7 @@ if choice == 'Logistics':
        viz_1 = sns.barplot(data = df_LQ1,
                    x = 'productName',
                    y = 'total_stock', 
-                   #color='royalblue',
+                   #palette='tab10',
                    ax=ax)
        fig.set_tight_layout(True)
        plt.title("")
@@ -190,6 +190,7 @@ if choice == 'Human Resources':
           st.write(" ")
           st.write(" ")
           st.dataframe(df_rename, use_container_width=True)
+          #df_pivot_sum = df_HR.pivot_table(values = 'monthly_turnover', index = 'sellers', aggfunc = 'sum')
        with col2:
           df_rel_freq = (df_HR['sellers'].value_counts()/df_HR.shape[0]*100)
           fig, ax = plt.subplots()
