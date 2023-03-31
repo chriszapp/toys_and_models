@@ -104,9 +104,13 @@ if choice == 'Presentation':
 #uncomment your if after you paste the code and make sure it works
 #if p:
 if choice == 'Sales':
-  st.header("Sales Quest")
-  st.subheader("The number of products sold by category and by month, with comparison and rate of change compared to the same month of the previous year")
-
+   st.header("Sales Quest")
+   st.subheader("The number of products sold by category and by month, with comparison and rate of change compared to the same month of the previous year")
+   year = st.selectbox("Select a Year", df_SL["Sales_Year"].unique())
+   filtered_df = df_SL[df_SL["Sales_Year"] == year]
+   st.write(filtered_df)
+   sales_by_month = filtered_df.groupby("Sales_Month").sum()[["Motorcycles_Sales", "Classic_Cars_Sales", "Trucks_Buses_Sales", "Vintage_Cars_Sales", "Planes_Sales", "Trains_Sales", "Ships_Sales"]]
+   st.bar_chart(sales_by_month)
 if choice == 'Finance':
    df_FQ1_sorted = df_FQ1.sort_values(by='turnover', ascending = False)
    st.header("Finances Quest 1")
