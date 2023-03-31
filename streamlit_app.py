@@ -112,6 +112,34 @@ if choice == 'Sales':
    st.write(filtered_df)
    sales_by_month = filtered_df.groupby("Sales_Month").sum()[["Motorcycles_Sales", "Classic_Cars_Sales", "Trucks_Buses_Sales", "Vintage_Cars_Sales", "Planes_Sales", "Trains_Sales", "Ships_Sales"]]
    st.bar_chart(sales_by_month)
+   # Filter the dataset to only include years 2021 and 2022
+   filtered_df = df_SL[df_SL["Sales_Year"].isin([2021, 2022])]
+
+# Group the data by year and calculate the total sales for each year
+   sales_by_year = filtered_df.groupby("Sales_Year").sum()[["Motorcycles_Sales", "Classic_Cars_Sales", "Trucks_Buses_Sales", "Vintage_Cars_Sales", "Planes_Sales", "Trains_Sales", "Ships_Sales"]]
+
+# Calculate the rate of change between 2021 and 2022
+   motorcycles_rate = (sales_by_year.loc[2022, "Motorcycles_Sales"] - sales_by_year.loc[2021, "Motorcycles_Sales"]) / sales_by_year.loc[2021, "Motorcycles_Sales"] * 100
+   classic_cars_rate = (sales_by_year.loc[2022, "Classic_Cars_Sales"] - sales_by_year.loc[2021, "Classic_Cars_Sales"]) / sales_by_year.loc[2021, "Classic_Cars_Sales"] * 100
+   trucks_buses_rate = (sales_by_year.loc[2022, "Trucks_Buses_Sales"] - sales_by_year.loc[2021, "Trucks_Buses_Sales"]) / sales_by_year.loc[2021, "Trucks_Buses_Sales"] * 100
+   vintage_cars_rate = (sales_by_year.loc[2022, "Vintage_Cars_Sales"] - sales_by_year.loc[2021, "Vintage_Cars_Sales"]) / sales_by_year.loc[2021, "Vintage_Cars_Sales"] * 100
+   planes_rate = (sales_by_year.loc[2022, "Planes_Sales"] - sales_by_year.loc[2021, "Planes_Sales"]) / sales_by_year.loc[2021, "Planes_Sales"] * 100
+   trains_rate = (sales_by_year.loc[2022, "Trains_Sales"] - sales_by_year.loc[2021, "Trains_Sales"]) / sales_by_year.loc[2021, "Trains_Sales"] * 100
+   ships_rate = (sales_by_year.loc[2022, "Ships_Sales"] - sales_by_year.loc[2021, "Ships_Sales"]) / sales_by_year.loc[2021, "Ships_Sales"] * 100
+
+# Display the results using Streamlit
+   st.write("Sales by Year")
+   st.bar_chart(sales_by_year)
+
+   st.write("Rate of Change between 2021 and 2022")
+   st.write(f"Motorcycles Sales: {motorcycles_rate:.2f}%")
+   st.write(f"Classic Cars Sales: {classic_cars_rate:.2f}%")
+   st.write(f"Trucks and Buses Sales: {trucks_buses_rate:.2f}%")
+   st.write(f"Vintage Cars Sales: {vintage_cars_rate:.2f}%")
+   st.write(f"Planes Sales: {planes_rate:.2f}%")
+   st.write(f"Trains Sales: {trains_rate:.2f}%")
+   st.write(f"Ships Sales: {ships_rate:.2f}%")
+   
 if choice == 'Finance':
    df_FQ1_sorted = df_FQ1.sort_values(by='turnover', ascending = False)
    st.header("Finances Quest 1")
