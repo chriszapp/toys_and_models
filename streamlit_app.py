@@ -92,54 +92,49 @@ df_LQ1 = pd.read_sql_query(query_LQ1, con = connection)
 df_HR = pd.read_sql_query(query_human_res, con = connection)
 df_HR['date'] = pd.to_datetime(df_HR[['year', 'month']]. assign(day=1))
 df_HR['date'] = pd.to_datetime(df_HR['date']).dt.date
-#dont touch these
-#with st.sidebar:
-#    p = st.button("Presentation")
-#    S = st.button("Sales")
-#    F = st.button("Finance")
-#    L = st.button("Logistics")
-#    HR = st.button("Human Resources")
+
 choice = st.sidebar.radio("Select a Topic", ('Sales','Finance','Logistics','Human Resources'))
-#if choice == 'Presentation':
-#   st.write('This is the presentation')
-#uncomment your if after you paste the code and make sure it works
-#if p:
+
 if choice == 'Sales':
    st.header("Sales Quest")
    st.subheader("The number of products sold by category and by month, with comparison and rate of change compared to the same month of the previous year")
    year = st.selectbox("Select a Year", df_SL["Sales_Year"].unique())
    filtered_df = df_SL[df_SL["Sales_Year"] == year]
-   st.write(filtered_df)
    sales_by_month = filtered_df.groupby("Sales_Month").sum()[["Motorcycles_Sales", "Classic_Cars_Sales", "Trucks_Buses_Sales", "Vintage_Cars_Sales", "Planes_Sales", "Trains_Sales", "Ships_Sales"]]
    st.bar_chart(sales_by_month)
-   # Filter the dataset to only include years 2021 and 2022
+   st.write(filtered_df)
    filtered_df = df_SL[df_SL["Sales_Year"].isin([2021, 2022])]
 
 # Group the data by year and calculate the total sales for each year
    sales_by_year = filtered_df.groupby("Sales_Year").sum()[["Motorcycles_Sales", "Classic_Cars_Sales", "Trucks_Buses_Sales", "Vintage_Cars_Sales", "Planes_Sales", "Trains_Sales", "Ships_Sales"]]
 
-# Calculate the rate of change between 2021 and 2022
-   motorcycles_rate = (sales_by_year.loc[2022, "Motorcycles_Sales"] - sales_by_year.loc[2021, "Motorcycles_Sales"]) / sales_by_year.loc[2021, "Motorcycles_Sales"] * 100
-   classic_cars_rate = (sales_by_year.loc[2022, "Classic_Cars_Sales"] - sales_by_year.loc[2021, "Classic_Cars_Sales"]) / sales_by_year.loc[2021, "Classic_Cars_Sales"] * 100
-   trucks_buses_rate = (sales_by_year.loc[2022, "Trucks_Buses_Sales"] - sales_by_year.loc[2021, "Trucks_Buses_Sales"]) / sales_by_year.loc[2021, "Trucks_Buses_Sales"] * 100
-   vintage_cars_rate = (sales_by_year.loc[2022, "Vintage_Cars_Sales"] - sales_by_year.loc[2021, "Vintage_Cars_Sales"]) / sales_by_year.loc[2021, "Vintage_Cars_Sales"] * 100
-   planes_rate = (sales_by_year.loc[2022, "Planes_Sales"] - sales_by_year.loc[2021, "Planes_Sales"]) / sales_by_year.loc[2021, "Planes_Sales"] * 100
-   trains_rate = (sales_by_year.loc[2022, "Trains_Sales"] - sales_by_year.loc[2021, "Trains_Sales"]) / sales_by_year.loc[2021, "Trains_Sales"] * 100
-   ships_rate = (sales_by_year.loc[2022, "Ships_Sales"] - sales_by_year.loc[2021, "Ships_Sales"]) / sales_by_year.loc[2021, "Ships_Sales"] * 100
+   categories = [('Motorcycles', 'Motorcycles_Sales_PY'), 
+              ('Classic_Cars', 'Ccs_PreviousYear'), 
+              ('Trucks_Buses', 'Trucks_Buses_Sales_PreviousYear'), 
+              ('Vintage_Cars', 'Vintage_Cars_Sales_PreviousYear'), 
+              ('Planes', 'Planes_Sales_PreviousYear'), 
+              ('Trains', 'Trains_PreviousYear'), 
+              ('Ships', 'Ships_PreviousYear')]
+   # Then calculate the total sales for each category for 2021 and 2022
+   sales_2021 = df_SL[df_SL['Sales_Year'] == 2021][[cat + '_Sales' for cat, _ in categories]].sum()
+   sales_2022 = df_SL[df_SL['Sales_Year'] == 2022][[cat + '_Sales' for cat, _ in categories]].sum()
 
-# Display the results using Streamlit
-   st.write("Sales by Year")
-   st.bar_chart(sales_by_year)
+   # Now, let's compute the rate of change between 2021 and 2022 for each category
+   change_rate = (sales_2022 - sales_2021) / sales_2021 * 100
 
-   st.write("Rate of Change between 2021 and 2022")
-   st.write(f"Motorcycles Sales: {motorcycles_rate:.2f}%")
-   st.write(f"Classic Cars Sales: {classic_cars_rate:.2f}%")
-   st.write(f"Trucks and Buses Sales: {trucks_buses_rate:.2f}%")
-   st.write(f"Vintage Cars Sales: {vintage_cars_rate:.2f}%")
-   st.write(f"Planes Sales: {planes_rate:.2f}%")
-   st.write(f"Trains Sales: {trains_rate:.2f}%")
-   st.write(f"Ships Sales: {ships_rate:.2f}%")
-   
+   # We need to get the dataframe for plotting
+   df_change_rate = pd.DataFrame(change_rate).reset_index()
+   df_change_rate.columns = ['Category', 'ChangeRate']
+   df_change_rate['Category'] = df_change_rate['Category'].apply(lambda x: x.replace('_Sales', ''))
+
+   # Plotting the data with Streamlit
+   st.title('Rate of Change Between 2021 and 2022')
+   st.bar_chart(df_change_rate.set_index('Category')['ChangeRate'])
+
+   # Here we're going to write the rate of change below the graph
+   for index, row in df_change_rate.iterrows():
+      st.write(f"{row['Category']} Sales: {row['ChangeRate']:.2f}%")
+     
 if choice == 'Finance':
    df_FQ1_sorted = df_FQ1.sort_values(by='turnover', ascending = False)
    st.header("Finances Quest 1")
